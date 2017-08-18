@@ -65,6 +65,7 @@ def work_in(dirname=None):
     curdir = os.getcwd()
     try:
         if dirname is not None:
+            dirname = dirname.replace('|', u"\uF07C")
             os.chdir(dirname)
         yield
     finally:

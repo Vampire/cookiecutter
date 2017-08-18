@@ -150,12 +150,12 @@ def generate_file(project_dir, infile, context, env):
 
     # Just copy over binary files. Don't render.
     logger.debug("Check {} to see if it's a binary".format(infile))
-    if is_binary(infile):
+    if is_binary(infile.replace('|', u"\uF07C")):
         logger.debug(
             'Copying binary {} to {} without rendering'
             ''.format(infile, outfile)
         )
-        shutil.copyfile(infile, outfile)
+        shutil.copyfile(infile.replace('|', u"\uF07C"), outfile)
     else:
         # Force fwd slashes on Windows for get_template
         # This is a by-design Jinja issue
@@ -163,7 +163,7 @@ def generate_file(project_dir, infile, context, env):
 
         # Render the file
         try:
-            tmpl = env.get_template(infile_fwd_slashes)
+            tmpl = env.get_template(infile_fwd_slashes.replace('|', u"\uF07C"))
         except TemplateSyntaxError as exception:
             # Disable translated so that printed exception contains verbose
             # information about syntax error location
@@ -177,7 +177,7 @@ def generate_file(project_dir, infile, context, env):
             fh.write(rendered_file)
 
     # Apply file permissions to output file
-    shutil.copymode(infile, outfile)
+    shutil.copymode(infile.replace('|', u"\uF07C"), outfile)
 
 
 def render_and_create_dir(dirname, context, output_dir, environment,
@@ -309,6 +309,7 @@ def generate_files(repo_dir, context=None, output_dir='.',
             render_dirs = []
 
             for d in dirs:
+                d = d.replace(u"\uF07C", '|')
                 d_ = os.path.normpath(os.path.join(root, d))
                 # We check the full path, because that's how it can be
                 # specified in the ``_copy_without_render`` setting, but
@@ -348,6 +349,7 @@ def generate_files(repo_dir, context=None, output_dir='.',
                     raise UndefinedVariableInTemplate(msg, err, context)
 
             for f in files:
+                f = f.replace(u"\uF07C", '|')
                 infile = os.path.normpath(os.path.join(root, f))
                 if is_copy_only_path(infile, context):
                     outfile_tmpl = env.from_string(infile)

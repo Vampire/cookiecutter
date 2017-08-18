@@ -22,6 +22,7 @@ def find_template(repo_dir):
 
     project_template = None
     for item in repo_dir_contents:
+        item = item.replace(u"\uF07C", '|')
         if 'cookiecutter' in item and '{{' in item and '}}' in item:
             project_template = item
             break
